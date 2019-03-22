@@ -11,11 +11,23 @@ export DEPS_IMAGE=dali_cu${CUDA_VERSION}.deps
 export BUILDER=dali_${PYV}_cu${CUDA_VERSION}.build
 export RUN_IMG=dali_${PYV}_cu${CUDA_VERSION}.run
 
-pushd ../third_party/manylinux/
-git checkout 96b47a25673b33c728e49099a3a6b1bf503a18c2 && git am ../../docker/0001-An-approximate-manylinux3.patch && PLATFORM=$(uname -m) TRAVIS_COMMIT=latest ./build.sh
-popd
+set -o errexit
+
+# build manylinux3
+MANYLINUX3_IMAGE_ID=$(docker images manylinux3_x86_64:latest -q)
+if [ n${MANYLINUX3_IMAGE_ID} = n ]; then
+    pushd ../third_party/manylinux/
+    git checkout 96b47a25673b33c728e49099a3a6b1bf503a18c2
+    git am ../../docker/0001-An-approximate-manylinux3.patch
+    PLATFORM=$(uname -m) TRAVIS_COMMIT=latest ./build.sh
+    popd
+fi
+
 pushd ../
-docker build -t ${DEPS_IMAGE} --build-arg "FROM_IMAGE_NAME"=manylinux3_x86_64 --build-arg "USE_CUDA_VERSION=${CUDA_VERSION}" -f Dockerfile.deps .
+DEPS_IMAGE_ID=$(docker images ${DEPS_IMAGE}:latest -q)
+if [ n${DEPS_IMAGE_ID} = n ]; then
+    docker build -t ${DEPS_IMAGE} --build-arg "FROM_IMAGE_NAME"=manylinux3_x86_64 --build-arg "USE_CUDA_VERSION=${CUDA_VERSION}" -f Dockerfile.deps .
+fi
 echo "Build image:" ${BUILDER}
 docker build -t ${BUILDER} --build-arg "DEPS_IMAGE_NAME=${DEPS_IMAGE}" --build-arg "PYVER=${PYVER}" --build-arg "PYV=${PYV}" --build-arg "NVIDIA_BUILD_ID=${NVIDIA_BUILD_ID}" .
 
