@@ -49,11 +49,21 @@ void CopyToExternalTensorHelper<GPUBackend>(const dali::Buffer<GPUBackend> &src,
   } else {
     DALI_FAIL("Coping from GPUBackend to device type " + to_string(dst_type));
   }
+  /*
+  std::cout << to_string(dst_type) << "," << typeid(dst_type).name() <<std::endl;                             \
+  std::cout << dst << "," << typeid(dst).name() << std::endl;
+  std::cout << src.raw_data() << "," << typeid(src.raw_data()).name() << std::endl;
+  std::cout << num << "," << typeid(num).name() << std::endl;
+  std::cout << direction << "," << typeid(direction).name() << std::endl;
+  std::cout << stream << "," << typeid(stream).name() << std::endl;
+  DALI_WARN("test");
+  */
   CUDA_CALL(cudaMemcpyAsync(dst,
                             src.raw_data(),
                             num,
                             direction,
                             stream));
+  //DALI_WARN("test1");
   CUDA_CALL(cudaStreamSynchronize(stream));
 }
 

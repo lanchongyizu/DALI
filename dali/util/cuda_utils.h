@@ -83,6 +83,7 @@ inline void cudaResultCheck<CUresult>(CUresult status) {
 
 }  // end namespace dali
 
+//std::cout <<"jamie: " << #code << ":" << status << std::endl;
 // For calling CUDA library functions (cudaError_t from runtime API and CUresult from driver API)
 #define CUDA_CALL(code)                 \
   do {                                  \

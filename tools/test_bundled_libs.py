@@ -37,6 +37,7 @@ def main():
                         "/lib64/ld-linux-x86-64.so.2",
                         "libdl.so.2",
                         "librt.so.1",
+                        "libcudart.so.10.0",
                         "libstdc++.so.6",
                         "libgcc_s.so.1",
                         "libz.so.1"
