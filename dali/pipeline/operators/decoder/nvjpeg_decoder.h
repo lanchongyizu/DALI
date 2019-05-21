@@ -126,7 +126,7 @@ class nvJPEGDecoder : public Operator<MixedBackend> {
     batched_output_(batch_size_),
     thread_pool_(max_streams_,
                  spec.GetArgument<int>("device_id"),
-                 true /* pin threads */) {
+                 false /* pin threads */) {
       // Setup the allocator struct to use our internal allocator
       nvjpegDevAllocator_t allocator;
       allocator.dev_malloc = &memory::DeviceNew;
